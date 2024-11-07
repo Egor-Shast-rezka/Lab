@@ -3,6 +3,7 @@ CXXFLAGS = -Werror -Wpedantic -Wall -std=c++11
 
 SRC_DIR = src
 OBJ_DIR = obj
+BMPF_DIR = bmp_file
 
 TARGET = read_BMP
 
@@ -22,5 +23,5 @@ clean:
 	rm -f $(OBJ_DIR)/*.o $(TARGET)
 
 run: $(TARGET)
-	./$(TARGET) $(OBJ_DIR)/example.bmp
+	./$(TARGET) $(BMPF_DIR)/example.bmp
 
