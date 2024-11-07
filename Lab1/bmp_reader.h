@@ -1,5 +1,6 @@
 /*
-
+    Egor Shastin st129457@student.spbu.ru
+    This header for BMP file (DIB and BMP header, and data of pixels.
 */
 
 #ifndef BMP_READER_H
@@ -9,8 +10,6 @@
 #include <iostream>
 
 #pragma pack(push, 1) // Disable compiler alignment of structures
-
-// Data taken from Wikipedia
 
 // Structure for a BMP file header
 struct BMP_Header {

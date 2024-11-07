@@ -1,5 +1,6 @@
 /*
-
+    Egor Shastin st129457@student.spbu.ru
+    This code contain functions for read, write BMP file and Free memory function.
 */
 
 #include "bmp_reader.h"

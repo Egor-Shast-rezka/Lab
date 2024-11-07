@@ -1,5 +1,6 @@
 /*
-
+    Egor Shastin st129457@student.spbu.ru
+    This code contain function for filter gaus.
 */
 
 #include "filter_gaus.h"
@@ -78,23 +79,16 @@ BMP_File* ApplyGaussianFilter(const BMP_File* bmp_file, double sigma, int kernel
     // Create the Gaussian kernel
     double* kernel = CreateGaussianKernel(sigma, kernel_radius);
 
-    // Create temporary image for intermediate results (horizontal pass)
-    BMP_File* temp_result = new BMP_File();
-    temp_result->bmp_header = bmp_file->bmp_header;
-    temp_result->dib_header = bmp_file->dib_header;
-    temp_result->file_data = new RGB[pixel_count];
+    // First pass: Apply convolution horizontally and store the result back into the same result image
+    Apply_Convolution(bmp_file, result, kernel, kernel_radius, true);
 
-    // First pass: Apply convolution horizontally
-    Apply_Convolution(bmp_file, temp_result, kernel, kernel_radius, true);
+    // Second pass: Apply convolution vertically on the already modified result image
+    Apply_Convolution(result, result, kernel, kernel_radius, false);
 
-    // Second pass: Apply convolution vertically
-    Apply_Convolution(temp_result, result, kernel, kernel_radius, false);
-
-    // Clean up temporary image and kernel
-    delete[] temp_result->file_data;
-    delete temp_result;
+    // Clean up kernel
     delete[] kernel;
 
     // Return the result image
     return result;
 }
+

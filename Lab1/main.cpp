@@ -1,11 +1,13 @@
 /*
-
+    Egor Shastin st129457@student.spbu.ru
+    This code is a general in all project, it run program and print commits.
 */
 
 #include "bmp_reader.h"
 #include "filter_gaus.h"
 #include <iostream>
 
+// The program reads an image called example.bmp
 int main(int argc, char* argv[]) {
 
     // Check heving two arguments
@@ -48,7 +50,7 @@ int main(int argc, char* argv[]) {
     
     BMP_File* new_bmp_file_2_filter = ApplyGaussianFilter(new_bmp_file_2, 1.0, 2); // Use filter Gausa
 
-    Save_BMP_File(new_bmp_file_2_filter, "BMP_clockwise_filter.bmp");// Save result filter Gausa
+    Save_BMP_File(new_bmp_file_2_filter, "BMP_clockwise_filter.bmp"); // Save result filter Gausa
     std::cout << "Save result filter Gausa for flip clockwise BMP file" << "\n"; 
     std::cout << "-> Fourth task completed: used filter Gausa for fliping BMP file" << "\n\n";
 
@@ -59,18 +61,4 @@ int main(int argc, char* argv[]) {
 
     return 0;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
