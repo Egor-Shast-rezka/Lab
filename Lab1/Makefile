@@ -25,3 +25,4 @@ clean:
 run: $(TARGET)
 	./$(TARGET) $(BMPF_DIR)/example.bmp
 
+

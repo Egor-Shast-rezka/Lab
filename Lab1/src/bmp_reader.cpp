@@ -50,7 +50,6 @@ void Free_BMP_File(BMP_File* bmp_file) {
         delete[] bmp_file->file_data; // Freeing memory for array pixels
         delete bmp_file; // Freeing memory for BMP_File
     }
-    std::cout << "Memory free." << "\n\n"; 
 }
 
 // Function for flip BMP file contra clockwise
