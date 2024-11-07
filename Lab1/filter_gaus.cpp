@@ -7,20 +7,23 @@
 #include <cmath>
 
 // Function to create a 1D Gaussian kernel
-double* CreateGaussianKernel(double sigma, int kernel_radius) {
+double* CreateGaussianKernel(double sigma, int kernel_radius)
+{
     int size = 2 * kernel_radius + 1;  // Kernel size is 2 * radius + 1
     double* kernel = new double[size]; // Allocate memory for kernel
     double sum = 0.0; // To accumulate sum for normalization
 
     // Fill the kernel with Gaussian values
-    for (int i = -kernel_radius; i <= kernel_radius; ++i) {
+    for (int i = -kernel_radius; i <= kernel_radius; ++i)
+    {
         // Gaussian formula for 1D
         kernel[i + kernel_radius] = std::exp(-(i * i) / (2 * sigma * sigma)) / (std::sqrt(2 * M_PI) * sigma);
         sum += kernel[i + kernel_radius]; // Accumulate sum
     }
 
     // Normalize the kernel (so that the sum of all elements equals 1)
-    for (int i = 0; i < size; ++i) {
+    for (int i = 0; i < size; ++i)
+    {
         kernel[i] /= sum;
     }
 
@@ -28,23 +31,30 @@ double* CreateGaussianKernel(double sigma, int kernel_radius) {
 }
 
 // Function to apply a 1D convolution to the image
-void Apply_Convolution(const BMP_File* bmp_file, BMP_File* result, const double* kernel, int kernel_radius, bool horizontal) {
+void Apply_Convolution(const BMP_File* bmp_file, BMP_File* result, const double* kernel, int kernel_radius, bool horizontal)
+{
     int width = bmp_file->dib_header.width;
     int height = bmp_file->dib_header.height;
 
     // Loop through each pixel in the image
-    for (int y = 0; y < height; ++y) {
-        for (int x = 0; x < width; ++x) {
+    for (int y = 0; y < height; ++y)
+    {
+        for (int x = 0; x < width; ++x)
+        {
             double r_sum = 0.0, g_sum = 0.0, b_sum = 0.0; // To accumulate color values
 
             // Apply the convolution with the Gaussian kernel
-            for (int k = -kernel_radius; k <= kernel_radius; ++k) {
+            for (int k = -kernel_radius; k <= kernel_radius; ++k)
+            {
                 int sample_x = x, sample_y = y; // Coordinates of the sample pixel
 
                 // If horizontal, move x, otherwise move y (vertical)
-                if (horizontal) {
+                if (horizontal)
+                {
                     sample_x = std::min(std::max(x + k, 0), width - 1); // Handle image edges
-                } else {
+                }
+                else
+                {
                     sample_y = std::min(std::max(y + k, 0), height - 1); // Handle image edges
                 }
 
@@ -68,7 +78,8 @@ void Apply_Convolution(const BMP_File* bmp_file, BMP_File* result, const double*
 }
 
 // Main function to apply the Gaussian filter to the BMP image
-BMP_File* ApplyGaussianFilter(const BMP_File* bmp_file, double sigma, int kernel_radius) {
+BMP_File* ApplyGaussianFilter(const BMP_File* bmp_file, double sigma, int kernel_radius)
+{
     // Create result image
     BMP_File* result = new BMP_File();
     result->bmp_header = bmp_file->bmp_header;

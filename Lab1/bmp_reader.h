@@ -12,7 +12,8 @@
 #pragma pack(push, 1) // Disable compiler alignment of structures
 
 // Structure for a BMP file header
-struct BMP_Header {
+struct BMP_Header
+{
     uint8_t ID[2]; // File identifier ('BM')
     uint32_t file_size; // BMP file size
     uint8_t unused[4]; // Reserved data
@@ -20,7 +21,8 @@ struct BMP_Header {
 };
 
 // Structure for DIB header
-struct DIB_Header {
+struct DIB_Header
+{
     uint32_t header_size; // DIB header size
     uint32_t width; // Image width in pixels
     uint32_t height; // Image height in pixels
@@ -35,7 +37,8 @@ struct DIB_Header {
 };
 
 // Structure for RGB pixel data (24-bit color)
-struct RGB {
+struct RGB
+{
     uint8_t blue;  // 8 bits for Blue channel
     uint8_t green; // 8 bits for Green channel
     uint8_t red;   // 8 bits for Red channel
@@ -46,7 +49,8 @@ struct RGB {
 };
 
 // Structure for the BMP file
-struct BMP_File {
+struct BMP_File
+{
     BMP_Header bmp_header; // Header BMP
     DIB_Header dib_header; // Reader BIB
     RGB* file_data; // Pixel data
@@ -54,7 +58,7 @@ struct BMP_File {
 
 #pragma pack(pop) // Shutdown <pragma pack(push, 1)>
 
-// Description function for load BMP file and freeing memory 
+// Description function for load BMP file and freeing memory
 BMP_File* Load_BMP_File(const char* fname);
 void Free_BMP_File(BMP_File* bmp_file);
 void Save_BMP_File(const BMP_File* bmp_file, const char* output_filename);
