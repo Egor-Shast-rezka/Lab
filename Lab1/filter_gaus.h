@@ -8,6 +8,6 @@
 
 #include "bmp_reader.h"
 
-BMP_File* ApplyGaussianFilter(const BMP_File* bmp_file, double sigma, int kernel_radius);
+void ApplyGaussianFilter(BMP_File* bmp_file);
 
 #endif
