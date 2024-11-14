@@ -17,6 +17,8 @@ BMP_File* Load_BMP_File(const char* file_name)
         std::cerr << "Unable to open file: " << file_name << "\n";
         return nullptr;
     }
+    // Не надо самому выделять память, обязательно забудете очистить.
+    // Используй стандартные контейнеры и умные указатели
     BMP_File* bmp_file = new BMP_File(); // Allocate memory for BMP_File
 
     // Read BMP header and DIB header using reinterpret_cast
@@ -24,6 +26,7 @@ BMP_File* Load_BMP_File(const char* file_name)
     file.read(reinterpret_cast<char*>(&bmp_file->dib_header), sizeof(DIB_Header));
 
     // Calculating pixel count and allocating memory for pixel data
+    // Мне кажется, есть поле в заголовке файла, которое хранит именно это значение, посмотри
     uint32_t pixel_count = bmp_file->dib_header.width * bmp_file->dib_header.height;
     bmp_file->file_data = new RGB[pixel_count];
 
@@ -38,6 +41,7 @@ BMP_File* Load_BMP_File(const char* file_name)
     {
         for (uint32_t x = 0; x < bmp_file->dib_header.width; ++x)
         {
+            // Читать попиксельно медленно, читай построчно
             // Read each pixel's RGB components using reinterpret_cast
             file.read(reinterpret_cast<char*>(&bmp_file->file_data[y * bmp_file->dib_header.width + x]), sizeof(RGB));
         }
@@ -50,6 +54,8 @@ BMP_File* Load_BMP_File(const char* file_name)
 
 
 // Function to free memory
+// В классе это был бы деструктор, который вызывается автоматически
+// Откуда другому программисту знать, что это надо вызывать?
 void Free_BMP_File(BMP_File* bmp_file)
 {
     if (bmp_file)
@@ -69,6 +75,7 @@ BMP_File* flip_BMP_90_contra_clockwise(BMP_File* bmp_file)
     new_bmp_file->dib_header = bmp_file->dib_header;
 
     // Swap width and height
+    // std::swap
     new_bmp_file->dib_header.width = bmp_file->dib_header.height;
     new_bmp_file->dib_header.height = bmp_file->dib_header.width;
 
@@ -94,6 +101,7 @@ BMP_File* flip_BMP_90_contra_clockwise(BMP_File* bmp_file)
 }
 
 // Function for flip BMP file clockwise
+// Так не пойдет. У тебя одна функция в три раза медленне другой
 BMP_File* flip_BMP_90_clockwise(BMP_File* bmp_file)
 {
     return flip_BMP_90_contra_clockwise(flip_BMP_90_contra_clockwise(flip_BMP_90_contra_clockwise(bmp_file)));

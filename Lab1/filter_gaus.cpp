@@ -5,7 +5,7 @@
 
 #include "bmp_reader.h"
 #include <cmath>
-
+// Я хочу, чтобы размер ядра можно было задавать
 // Its define the kernel (3*3) for Gaussian filter
 double gaussianKernel[3][3] = {
     { 1.0 / 16, 2.0 / 16, 1.0 / 16 },
