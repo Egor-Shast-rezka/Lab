@@ -57,7 +57,7 @@ struct BMP_File
 };
 
 #pragma pack(pop) // Shutdown <pragma pack(push, 1)>
-
+// Почему это не методы? У нас C++, надо стремиться к инкапсуляции и безопасности
 // Description function for load BMP file and freeing memory
 BMP_File* Load_BMP_File(const char* fname);
 void Free_BMP_File(BMP_File* bmp_file);
