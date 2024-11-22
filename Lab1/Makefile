@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -Werror -Wpedantic -Wall -std=c++11
+CXXFLAGS = -Werror -Wpedantic -Wall -std=c++17
 
 TARGET = read_BMP
 ALLNEWBMP = BMP_clockwise.bmp BMP_clockwise_filter.bmp BMP_contra_clockwise.bmp BMP_contra_clockwise_filter.bmp 
@@ -22,3 +22,5 @@ clean:
 run: $(TARGET)
 	./$(TARGET) example.bmp
 
+run test: $(TARGET)
+	valgrind --leak-check=full ./$(TARGET) example.bmp
