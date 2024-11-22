@@ -27,8 +27,7 @@ std::unique_ptr<BMP_File> Load_BMP_File(const char* file_name)
     file.read(reinterpret_cast<char*>(&bmp_file->dib_header), sizeof(DIB_Header));
 
     // Calculate pixel count and allocate memory for pixel data
-    uint32_t pixel_count = bmp_file->dib_header.width * bmp_file->dib_header.height;
-    bmp_file->file_data = new RGB[pixel_count];
+    bmp_file->file_data = new RGB[bmp_file->dib_header.data_size];
     
     // Move file pointer to the beginning of pixel data
     file.seekg(bmp_file->dib_header.header_size + 14, std::ios::beg);

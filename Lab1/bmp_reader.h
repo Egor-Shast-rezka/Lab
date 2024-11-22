@@ -58,12 +58,11 @@ public:
 // Class for the BMP file
 class BMP_File
 {
-private:
+public:
     BMP_Header bmp_header; // BMP header
     DIB_Header dib_header; // DIB header
     RGB* file_data; // Pixel data
     
-public:
     BMP_File() : file_data(nullptr) {}
     
     // Destructor to free memory
