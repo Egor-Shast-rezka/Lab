@@ -8,6 +8,6 @@
 
 #include "bmp_reader.h"
 
-void ApplyGaussianFilter(BMP_File* bmp_file);
+void ApplyGaussianFilter(BMP_File* bmp_file, int size, double sigma);
 
 #endif

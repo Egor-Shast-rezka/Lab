@@ -8,21 +8,26 @@
 
 #include <cstdint> // For precise bit control
 #include <iostream>
+#include <memory>
 
 #pragma pack(push, 1) // Disable compiler alignment of structures
 
-// Structure for a BMP file header
-struct BMP_Header
+// Class for a BMP file header
+class BMP_Header
 {
+public:
     uint8_t ID[2]; // File identifier ('BM')
     uint32_t file_size; // BMP file size
     uint8_t unused[4]; // Reserved data
     uint32_t pixel_offset; // Offset to the start of pixel data
+
+    BMP_Header() = default;
 };
 
-// Structure for DIB header
-struct DIB_Header
+// Class for DIB header
+class DIB_Header
 {
+public:
     uint32_t header_size; // DIB header size
     uint32_t width; // Image width in pixels
     uint32_t height; // Image height in pixels
@@ -34,35 +39,47 @@ struct DIB_Header
     uint32_t print_resolution_y; // Y-axis resolution (in pixels per meter)
     uint32_t colors_count; // Number of colors in the palette
     uint32_t important_colors; // Number of important colors
+
+    DIB_Header() = default;
 };
 
-// Structure for RGB pixel data (24-bit color)
-struct RGB
+// Class for RGB pixel data (24-bit color)
+class RGB
 {
+public:
     uint8_t blue;  // 8 bits for Blue channel
     uint8_t green; // 8 bits for Green channel
     uint8_t red;   // 8 bits for Red channel
 
     // Default constructor
     RGB(uint8_t r = 0, uint8_t g = 0, uint8_t b = 0) : blue(b), green(g), red(r) {}
-
 };
 
-// Structure for the BMP file
-struct BMP_File
+// Class for the BMP file
+class BMP_File
 {
-    BMP_Header bmp_header; // Header BMP
-    DIB_Header dib_header; // Reader BIB
+private:
+    BMP_Header bmp_header; // BMP header
+    DIB_Header dib_header; // DIB header
     RGB* file_data; // Pixel data
+    
+public:
+    BMP_File() : file_data(nullptr) {}
+    
+    // Destructor to free memory
+    ~BMP_File() {
+        delete[] file_data;
+    }
 };
+
+// Functions to load and save BMP files
+std::unique_ptr<BMP_File> Load_BMP_File(const char* file_name);
+void Save_BMP_File(const BMP_File* bmp_file, const char* output_filename);
+
+// Function for filter gausa
+std::unique_ptr<BMP_File> flip_BMP_90_contra_clockwise(BMP_File* bmp_file);
+std::unique_ptr<BMP_File> flip_BMP_90_clockwise(BMP_File* bmp_file);
 
 #pragma pack(pop) // Shutdown <pragma pack(push, 1)>
-
-// Description function for load BMP file and freeing memory
-BMP_File* Load_BMP_File(const char* fname);
-void Free_BMP_File(BMP_File* bmp_file);
-void Save_BMP_File(const BMP_File* bmp_file, const char* output_filename);
-BMP_File* flip_BMP_90_contra_clockwise(BMP_File* bmp_file);
-BMP_File* flip_BMP_90_clockwise(BMP_File* bmp_file);
 
 #endif

@@ -6,21 +6,44 @@
 #include "bmp_reader.h"
 #include <cmath>
 
-// Its define the kernel (3*3) for Gaussian filter
-double gaussianKernel[3][3] = {
-    { 1.0 / 16, 2.0 / 16, 1.0 / 16 },
-    { 2.0 / 16, 4.0 / 16, 2.0 / 16 },
-    { 1.0 / 16, 2.0 / 16, 1.0 / 16 }
-};
+// Its function for generate the kernel for Gaussian filter
+void GenereteGausKernel(int size, double sigma, double** gaussianKernel){
+    double sum = 0.0;
+    const double PI = 3.14159265; // 
+    
+    //double gaussianKernel[length_gaus][height_gaus];
+    for (int height = 0; height < size; ++height) {
+        for (int length = 0; length < size; ++length) {
+            gaussianKernel[height][length] = (1 / (2 * PI * sigma * sigma)) *
+                (exp(-(height * height + length * length)) / 2 * sigma * sigma) ; 
+            
+            sum += gaussianKernel[height][length]; // For stabilization Gaus karnel
+        }
+    }
+    
+    // Stabilization Gaus karnel
+    for (int height = 0; height < size; height++) {
+        for (int length = 0; length < size; length++) {
+            gaussianKernel[height][length] /= sum; 
+        }
+    }
+}
 
 // Function to apply Gaussian filter to an image
-void ApplyGaussianFilter(BMP_File* bmp_file) {
+void ApplyGaussianFilter(BMP_File* bmp_file, int size, double sigma) {
     int width = bmp_file->dib_header.width;
     int height = bmp_file->dib_header.height;
-
+    
     // Create buffer to store result
     RGB* file_data = new RGB[width * height];
-
+    
+    // Generate Gaus kernel
+    double** gaussianKernel = new double*[size];
+    for (int i = 0; i < size; ++i) {
+        gaussianKernel[i] = new double[size];
+    }
+    GenereteGausKernel(size, sigma, gaussianKernel);
+    
     // Apply Gausian filter line by line
     for (int y = 1; y < height - 1; ++y) {
         for (int x = 1; x < width - 1; ++x) {
@@ -30,9 +53,9 @@ void ApplyGaussianFilter(BMP_File* bmp_file) {
             for (int ky = -1; ky <= 1; ++ky) {
                 for (int kx = -1; kx <= 1; ++kx) {
                     RGB pixel = bmp_file->file_data[(y + ky) * width + (x + kx)];
-                    red += pixel.red * gaussianKernel[ky + 1][kx + 1];
-                    green += pixel.green * gaussianKernel[ky + 1][kx + 1];
                     blue += pixel.blue * gaussianKernel[ky + 1][kx + 1];
+                    green += pixel.green * gaussianKernel[ky + 1][kx + 1];
+                    red += pixel.red * gaussianKernel[ky + 1][kx + 1];
                 }
             }
 
@@ -54,6 +77,10 @@ void ApplyGaussianFilter(BMP_File* bmp_file) {
 
     // Free memory for the result
     delete[] file_data;
+    for (int i = 0; i < size; ++i) {
+        delete[] gaussianKernel[i];
+    }
+    delete[] gaussianKernel;
 }
 
 
