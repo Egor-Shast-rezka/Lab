@@ -8,152 +8,131 @@
 #include <fstream>
 #include <memory>
 
-// Function for loading BMP file
-std::unique_ptr<BMP_File> Load_BMP_File(const char* file_name)
-{
+// Method for loading BMP file
+bool BMP_File::Load_BMP_File(const char* file_name) {
+    
     // Open file in reading mode
     std::ifstream file(file_name, std::ios::binary);
-    if (!file)
-    {
+    if (!file) {
         std::cerr << "Unable to open file: " << file_name << "\n";
-        return nullptr;
+        return false;
     }
     
-    // Smart pointer for bmp_file
-    std::unique_ptr<BMP_File> bmp_file = std::make_unique<BMP_File>();
-
-    // Read BMP header and DIB header
-    file.read(reinterpret_cast<char*>(&bmp_file->bmp_header), sizeof(BMP_Header));
-    file.read(reinterpret_cast<char*>(&bmp_file->dib_header), sizeof(DIB_Header));
-
-    // Calculate pixel count and allocate memory for pixel data
-    bmp_file->file_data = new RGB[bmp_file->dib_header.data_size];
+    // Read BMP header and DIB header using reinterpret_cast
+    file.read(reinterpret_cast<char*>(&bmp_header), sizeof(BMP_Header));
+    file.read(reinterpret_cast<char*>(&dib_header), sizeof(DIB_Header));
+    
+    // Calculating pixel count and allocating memory for pixel data
+    file_data = new RGB[dib_header.width * dib_header.height];
+    
+    // Row size (with padding) is aligned to 4 bytes
+    int row_size = ((dib_header.width * dib_header.bits_per_pixel + 31) / 32) * 4;
     
     // Move file pointer to the beginning of pixel data
-    file.seekg(bmp_file->dib_header.header_size + 14, std::ios::beg);
+    file.seekg(bmp_header.pixel_offset, std::ios::beg);
 
-    // Row size (with padding) is aligned to 4 bytes
-    int row_size = ((bmp_file->dib_header.width * bmp_file->dib_header.bits_per_pixel + 31) / 32) * 4;
-    
-    // Reading pixel data using reinterpret_cast
-    for (int y = bmp_file->dib_header.height - 1; y >= 0; --y)
-    {
-        // Read file line by line
-        file.read(reinterpret_cast<char*>(&bmp_file->file_data[y * bmp_file->dib_header.width]), bmp_file->dib_header.width * sizeof(RGB));
+    for (int y = dib_header.height - 1; y >= 0; --y) {
         
-        file.seekg(row_size - bmp_file->dib_header.width * sizeof(RGB), std::ios::cur);
+        // Read BMP File line to line
+        file.read(reinterpret_cast<char*>(&file_data[y * dib_header.width]), dib_header.width * sizeof(RGB));
+        
+        // Skip padding bytes if any (BMP rows are padded to 4-byte boundaries)
+        file.seekg(row_size - dib_header.width * sizeof(RGB), std::ios::cur);
     }
 
     file.close(); // Close file
-    return bmp_file;
+    return true;
 }
 
-// Function to save BMP file
-void Save_BMP_File(const BMP_File* bmp_file, const char* output_filename)
-{
-    // Open file for writing
+// Method for save new file
+void BMP_File::Save_BMP_File(const char* output_filename) {
+
+    // Open file
     std::ofstream file(output_filename, std::ios::binary);
     if (!file)
     {
         std::cerr << "Unable to open file for writing: " << output_filename << "\n";
         return;
     }
-
-    // Write BMP header and DIB header
-    file.write(reinterpret_cast<const char*>(&bmp_file->bmp_header), sizeof(BMP_Header));
-    file.write(reinterpret_cast<const char*>(&bmp_file->dib_header), sizeof(DIB_Header));
     
-    file.seekp(bmp_file->dib_header.header_size + 14, std::ios::beg);
+    // Copy header BMP and DIB in new file
+    file.write(reinterpret_cast<const char*>(&bmp_header), sizeof(BMP_Header));
+    file.write(reinterpret_cast<const char*>(&dib_header), sizeof(DIB_Header));
+    
+    file.seekp(dib_header.header_size + 14, std::ios::beg);
 
-    // Calculate padding
-    uint32_t row_size = ((bmp_file->dib_header.width * bmp_file->dib_header.bits_per_pixel + 31) / 32) * 4;
-    uint32_t padding = row_size - (bmp_file->dib_header.width * bmp_file->dib_header.bits_per_pixel / 8);
-
+    // Colculate padding
+    int row_size = ((dib_header.width * dib_header.bits_per_pixel + 31) / 32) * 4;
+    uint32_t padding = row_size - (dib_header.width * sizeof(RGB));
+    
     // Write pixels in file
-    for (int y = bmp_file->dib_header.height - 1; y >= 0; --y)
-    {
-        for (uint32_t x = 0; x < bmp_file->dib_header.width; ++x)
-        {
-            uint32_t pixel_index = y * bmp_file->dib_header.width + x;
-            file.put(bmp_file->file_data[pixel_index].blue);
-            file.put(bmp_file->file_data[pixel_index].green);
-            file.put(bmp_file->file_data[pixel_index].red);
-        }
-
-        // Addition padding
-        for (uint32_t p = 0; p < padding; ++p)
-        {
+    for (int y = dib_header.height - 1; y >= 0; --y) {
+        file.write(reinterpret_cast<const char*>(&file_data[y * dib_header.width]), dib_header.width * sizeof(RGB));
+        for (uint32_t p = 0; p < padding; ++p) {
             file.put(0);
         }
     }
 
     file.close(); // File close
     std::cout << "Image saved successfully to " << output_filename << "\n";
+    
+    
 }
 
-
-// Function for flip BMP file contra clockwise
-std::unique_ptr<BMP_File> flip_BMP_90_contra_clockwise(BMP_File* bmp_file)
-{
-    std::unique_ptr<BMP_File> new_bmp_file = std::make_unique<BMP_File>();
-
-    // Copy headers into the new BMP file
-    new_bmp_file->bmp_header = bmp_file->bmp_header;
-    new_bmp_file->dib_header = bmp_file->dib_header;
-
+// Method for flip BMP file contra clockwise
+std::unique_ptr<BMP_File> BMP_File::flip_BMP_90_contra_clockwise() {
+    auto new_bmp_file = std::make_unique<BMP_File>();
+    
+    // Copy header in new BMP file
+    new_bmp_file->bmp_header = bmp_header;
+    new_bmp_file->dib_header = dib_header;
+    
     // Swap width and height
     std::swap(new_bmp_file->dib_header.width, new_bmp_file->dib_header.height);
 
-    // Calculate new image size
-    uint32_t new_pixel_count = new_bmp_file->dib_header.width * new_bmp_file->dib_header.height;
-    new_bmp_file->file_data = new RGB[new_pixel_count];
+    new_bmp_file->file_data = new RGB[new_bmp_file->dib_header.width * new_bmp_file->dib_header.height];
 
-    for (uint32_t y = 0; y < bmp_file->dib_header.height; ++y)
-    {
-        for (uint32_t x = 0; x < bmp_file->dib_header.width; ++x)
-        {
-            // Calculate the old pixel index
-            uint32_t old_index = y * bmp_file->dib_header.width + x;
-
-            // Calculate the new position for the pixel
-            uint32_t new_index = (bmp_file->dib_header.width - 1 - x) * new_bmp_file->dib_header.width + y;
-
-            // Copy the pixel to the new position
-            new_bmp_file->file_data[new_index] = bmp_file->file_data[old_index];
+    for (uint32_t y = 0; y < dib_header.height; ++y) {
+        for (uint32_t x = 0; x < dib_header.width; ++x) {
+        
+            // Search old index pixel
+            uint32_t old_index = y * dib_header.width + x;
+            
+            // Colculate new position for pixel
+            uint32_t new_index = (dib_header.width - 1 - x) * new_bmp_file->dib_header.width + y;
+            
+            // Copy pixel on new position
+            new_bmp_file->file_data[new_index] = file_data[old_index];
         }
     }
-    
+
     return new_bmp_file;
 }
 
-// Function for flip BMP file clockwise
-std::unique_ptr<BMP_File> flip_BMP_90_clockwise(BMP_File* bmp_file)
-{
-    std::unique_ptr<BMP_File> new_bmp_file = std::make_unique<BMP_File>();
-
-    // Copy headers into the new BMP file
-    new_bmp_file->bmp_header = bmp_file->bmp_header;
-    new_bmp_file->dib_header = bmp_file->dib_header;
-
+// Method for flip BMP file clockwise
+std::unique_ptr<BMP_File> BMP_File::flip_BMP_90_clockwise() {
+    auto new_bmp_file = std::make_unique<BMP_File>();
+    
+    // Copy header in new BMP file
+    new_bmp_file->bmp_header = bmp_header;
+    new_bmp_file->dib_header = dib_header;
+    
     // Swap width and height
     std::swap(new_bmp_file->dib_header.width, new_bmp_file->dib_header.height);
 
-    // Calculate new image size
-    uint32_t new_pixel_count = new_bmp_file->dib_header.width * new_bmp_file->dib_header.height;
-    new_bmp_file->file_data = new RGB[new_pixel_count];
+    new_bmp_file->file_data = new RGB[new_bmp_file->dib_header.width * new_bmp_file->dib_header.height];
 
-    for (uint32_t y = 0; y < bmp_file->dib_header.height; ++y)
-    {
-        for (uint32_t x = 0; x < bmp_file->dib_header.width; ++x)
-        {
-            // Calculate the old pixel index
-            uint32_t old_index = y * bmp_file->dib_header.width + x;
-
-            // Calculate the new position for the pixel
-            uint32_t new_index = x * new_bmp_file->dib_header.width + (bmp_file->dib_header.height - 1 - y);
-
-            // Copy the pixel to the new position
-            new_bmp_file->file_data[new_index] = bmp_file->file_data[old_index];
+    for (uint32_t y = 0; y < dib_header.height; ++y) {
+        for (uint32_t x = 0; x < dib_header.width; ++x) {
+        
+            // Search old index pixel
+            uint32_t old_index = y * dib_header.width + x;
+            
+            // Colculate new position for pixel
+            uint32_t new_index = x * new_bmp_file->dib_header.width + (dib_header.height - 1 - y);
+            
+            // Copy pixel on new position
+            new_bmp_file->file_data[new_index] = file_data[old_index];
         }
     }
 

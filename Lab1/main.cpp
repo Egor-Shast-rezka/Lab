@@ -6,52 +6,50 @@
 #include "bmp_reader.h"
 #include "filter_gaus.h"
 #include <iostream>
-#include <memory>
 
-// The program reads an image called example.bmp
-int main(int argc, char* argv[])
-{
+int main(int argc, char* argv[]) {
+
     // Check heving two arguments
     if (argc < 2)
     {
-        std::cout << "Usage: " << argv[0] << " <path to BMP file>" << "\n"; // If the file path is not specified
+        std::cout << "Using: " << argv[0] << " <path to BMP file>" << "\n"; // If the file path is not specified
         return 0;
     }
 
-    // Load BMP file using std::unique_ptr
-    std::unique_ptr<BMP_File> bmp_file = Load_BMP_File(argv[1]);
-
-    if (!bmp_file)
+    BMP_File bmp_file;
+    if (!bmp_file.Load_BMP_File(argv[1]))  // Create array for BMP imagine
     {
         std::cerr << "Failed to load BMP file." << "\n";
         return -1;
     }
-
-    std::cout << "BMP File read successfully.\n";
-    std::cout << "BMP file size: " << bmp_file->bmp_header.file_size << " bytes\n";
-    std::cout << "-> First task completed: file size printed.\n\n";
-
+    else
+    {
+        std::cout << "BMP File read succesful." << "\n";
+    }
+    
+    
+    std::cout << "BMP file size:" << bmp_file.bmp_header.file_size << " byte" << "\n";
+    std::cout << "-> First task completed: file size printed." << "\n\n";
+    
     // Flip BMP contra clockwise
-    std::unique_ptr<BMP_File> new_bmp_file_1(flip_BMP_90_contra_clockwise(bmp_file.get()));
-    Save_BMP_File(new_bmp_file_1.get(), "BMP_contra_clockwise.bmp");
-    std::cout << "-> Second task completed: file flipped contra-clockwise." << "\n";
-    
-    
+    auto new_bmp_file_1 = bmp_file.flip_BMP_90_contra_clockwise();
+    new_bmp_file_1->Save_BMP_File("BMP_contra_clockwise.bmp"); // Save new file 1
+    std::cout << "-> Second task completed: file flip contra clockwise." << "\n";
+
     // Use filter Gausa for BMP contra clockwise
-    ApplyGaussianFilter(new_bmp_file_1.get(), 5, 2.0);
-    Save_BMP_File(new_bmp_file_1.get(), "BMP_contra_clockwise_filter.bmp"); // Save result filter Gausa
-    std::cout << "-> Gaussian filter applied to contra-clockwise BMP." << "\n";
-    
+    ApplyGaussianFilter(new_bmp_file_1.get(), 5, 3.0);
+    new_bmp_file_1->Save_BMP_File("BMP_contra_clockwise_filter.bmp"); // Save result filter Gausa
+    new_bmp_file_1.reset(); // Delete new_bmp_file_1
     
     // Flip BMP clockwise
-    std::unique_ptr<BMP_File> new_bmp_file_2(flip_BMP_90_clockwise(bmp_file.get()));
-    Save_BMP_File(new_bmp_file_2.get(), "BMP_clockwise.bmp"); // Save new file 2
-    std::cout << "-> Third task completed: file flipped clockwise." << "\n";
-    
-    // Use filter Gausa for BMP contra clockwise
-    ApplyGaussianFilter(new_bmp_file_2.get(), 5, 2.0);
-    Save_BMP_File(new_bmp_file_2.get(), "BMP_clockwise_filter.bmp"); // Save result filter Gausa
-    std::cout << "-> Gaussian filter applied to clockwise BMP." << "\n\n";
+    auto new_bmp_file_2 = bmp_file.flip_BMP_90_clockwise();
+    new_bmp_file_2->Save_BMP_File("BMP_clockwise.bmp"); // Save new file 2
+    std::cout << "-> Third task completed: file flip clockwise." << "\n";
+
+    // Use filter Gausa for BMP clockwise
+    ApplyGaussianFilter(new_bmp_file_2.get(), 5, 3.0);
+    new_bmp_file_2->Save_BMP_File("BMP_clockwise_filter.bmp"); // Save result filter Gausa
+    new_bmp_file_2.reset(); // Delete new_bmp_file_2
     
     std::cout << "Save result filter Gausa" << "\n";
     std::cout << "-> Fourth task completed: used filter Gausa for fliping BMP file" << "\n\n";

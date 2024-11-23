@@ -9,7 +9,7 @@
 // Its function for generate the kernel for Gaussian filter
 void GenereteGausKernel(int size, double sigma, double** gaussianKernel){
     double sum = 0.0;
-    const double PI = 3.14159265; // 
+    const double PI = 3.14159265;
     
     //double gaussianKernel[length_gaus][height_gaus];
     for (int height = 0; height < size; ++height) {

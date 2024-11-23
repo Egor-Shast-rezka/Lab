@@ -12,9 +12,8 @@
 
 #pragma pack(push, 1) // Disable compiler alignment of structures
 
-// Class for a BMP file header
-class BMP_Header
-{
+// Structure for a BMP file header
+class BMP_Header {
 public:
     uint8_t ID[2]; // File identifier ('BM')
     uint32_t file_size; // BMP file size
@@ -24,9 +23,8 @@ public:
     BMP_Header() = default;
 };
 
-// Class for DIB header
-class DIB_Header
-{
+// Structure for DIB header
+class DIB_Header {
 public:
     uint32_t header_size; // DIB header size
     uint32_t width; // Image width in pixels
@@ -43,9 +41,8 @@ public:
     DIB_Header() = default;
 };
 
-// Class for RGB pixel data (24-bit color)
-class RGB
-{
+// Structure for RGB pixel data (24-bit color)
+class RGB {
 public:
     uint8_t blue;  // 8 bits for Blue channel
     uint8_t green; // 8 bits for Green channel
@@ -55,30 +52,28 @@ public:
     RGB(uint8_t r = 0, uint8_t g = 0, uint8_t b = 0) : blue(b), green(g), red(r) {}
 };
 
-// Class for the BMP file
-class BMP_File
-{
+// Structure for the BMP file
+class BMP_File {
 public:
-    BMP_Header bmp_header; // BMP header
-    DIB_Header dib_header; // DIB header
+    BMP_Header bmp_header; // Header BMP
+    DIB_Header dib_header; // Reader BIB
     RGB* file_data; // Pixel data
-    
+
     BMP_File() : file_data(nullptr) {}
     
-    // Destructor to free memory
     ~BMP_File() {
         delete[] file_data;
     }
+
+    // Methods Load and Save BMP File
+    virtual bool Load_BMP_File(const char* file_name);
+    virtual void Save_BMP_File(const char* output_filename);
+
+    // Methods flipped BMP File
+    std::unique_ptr<BMP_File> flip_BMP_90_contra_clockwise();
+    std::unique_ptr<BMP_File> flip_BMP_90_clockwise();
 };
 
-// Functions to load and save BMP files
-std::unique_ptr<BMP_File> Load_BMP_File(const char* file_name);
-void Save_BMP_File(const BMP_File* bmp_file, const char* output_filename);
-
-// Function for filter gausa
-std::unique_ptr<BMP_File> flip_BMP_90_contra_clockwise(BMP_File* bmp_file);
-std::unique_ptr<BMP_File> flip_BMP_90_clockwise(BMP_File* bmp_file);
-
-#pragma pack(pop) // Shutdown <pragma pack(push, 1)>
+#pragma pack(pop)  // Shutdown <pragma pack(push, 1)>
 
 #endif
