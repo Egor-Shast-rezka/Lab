@@ -12,5 +12,6 @@
 #RUN:
 # ./bin/Poker	to launch program
 
+# File Poker_UML_diagramma.drawio open in [draw.io](https://app.diagrams.net/)
 
 #17-19.12.2024
