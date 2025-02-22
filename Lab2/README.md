@@ -27,7 +27,7 @@ To start the game, run the compiled executable:
 ./bin/Poker
 ```
 
-### Tests
+## Tests
 
 #### Continuous Integration (CI)
 This project uses GitHub Actions for automated builds and testing. All tests are run in the CI pipeline on every commit.
