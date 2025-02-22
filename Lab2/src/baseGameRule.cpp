@@ -2,9 +2,12 @@
     Egor Shastin st129457@student.spbu.ru
     
 */
+
 #include "baseGameRule.h"
 #include "pathGame.h"
 #include "bots.h"
+#include "characters.h"
+#include "gameMode.h"
 
 
 // ---------------------------
@@ -117,8 +120,12 @@ void Player::setChips(int num) { // Set deb
     Chips = num;
 }
 
-void Player::getChips() const { //Get Chips
+void Player::getChipsOnDisplay() const { //Get Chips
     std::cout << "Chips count: " << Chips << ".\n";
+}
+
+int Player::getChips() const { //Get Chips
+    return Chips;
 }
 
 void Player::PlaceBid(int num) { // Make a bed
@@ -146,12 +153,19 @@ void Player::delAllCards() { // Delete all cards after end play
         throw std::out_of_range("No cards in the hand!"); // Error if in hand none card
     }
     else {
-        for (int i = 0; i < hand.getCountCards(); i++) {
+        for (int i = 0; i <= hand.getCountCards(); i++) {
             hand.delLastCard();
         }
     }
 }
 
+bool Player::isBot() {
+    return false;
+}
+
+int Player::chipRandom(int countChips, int currentBet) {
+    return 0;
+}
 
 //----------------------
 std::vector<std::vector<int>> search_max_number(std::vector<std::vector<int>>& vectors, int index) {
@@ -197,6 +211,10 @@ void Dealler::dealCards(int num, Player& player) { // Issuing 'num' cards to a p
 
 Card Dealler::getOneCard() { // Drawing a card from the deck
     return deck.deal();
+}
+
+void Dealler::newDeck() {
+    deck = Deck();
 }
 
 std::vector<int> Dealler::SearchWinner(std::vector<Player>& players, std::vector<Card>& cards) const { // Search for a winner

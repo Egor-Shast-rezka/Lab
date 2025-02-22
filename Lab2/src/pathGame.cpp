@@ -6,6 +6,8 @@
 #include "baseGameRule.h"
 #include "pathGame.h"
 #include "bots.h"
+#include "characters.h"
+#include "gameMode.h"
 
 // -----------------
 Game::Game() {}
@@ -21,115 +23,127 @@ void Game::setDealler() { // Creating a dealer.
     dealler = diller;
 }
 
-int Game::startGame() { // Issuing chips
+void Game::setBot(std::string name, int index) {
+    if (index == 1) {
+        AIPlayer_easy bot(name);
+        players.push_back(bot);
+    }
+    else if (index == 2) {
+        AIPlayer_normal bot(name);
+        players.push_back(bot);
+    }
+    else if (index == 3) {
+        AIPlayer_hard bot(name);
+        players.push_back(bot);
+    }
+}
+
+void Game::resetGame() {
+    cards.clear();
+    dealler.newDeck();
+    dealler.shuffleDeck();
+    currentBet = 0;
     for (auto& player : players) {
-        player.setChips(1000); 
+        player.delAllCards();
     }
+    std::cout << "\n";
+}
 
-    dealler.shuffleDeck(); // The dealer shuffles the deck
+bool Game::checkContinueGame() {
+    char act;
+    std::cout << "Do you want to continue the game? (y/n): ";
+    std::cin >> act;
+    return act == 'y';
+}
 
-    for (auto& player : players) { // The dealer deals 2 cards to each player
-        dealler.dealCards(2, player);
+void Game::setChipsAllPlayer(int count) {
+    for (auto& player : players) {
+        player.setChips(count);
     }
+}
 
-    for (const auto& player : players) { // Players information
-        player.getName();
-        player.getChips();
-        player.getCardsOnDisplay();
-        std::cout << "\n";
-    }
-    
-    std::vector<std::string> Numbers = { "First", "Second", "Third"};
+int Game::startGame() {
+    do {
+        //bool Allin = false;
+        dealler.shuffleDeck();
 
-    for (int i = 1; i <= 3; i++){
-    
-        Card Card = dealler.getOneCard();
-        std::cout << "\n" << Numbers[i-1] << " card: ";
-        cards.push_back(Card); // Added card on table
-        Card.display();
-
-        char act = 'p';
-        std::cout << "Your answer (p, c): ";
-        std::cin >> act;
-
-        if (act == 'p') {
-        
-            if (cards.size() > 1) {
-                std::cout << "Your lose: " << currentBet << "\n";
-            }
-            
-            std::cout << "New Game? (y, n): ";
-            std::cin >> act;
-            if (act == 'n') {
-                
-                std::cout << "End Game";
-                return 0;
-            }
-            else {
-                
-                std::cout << "New Game";
-                return 1;
-            }
-        } 
-        
-        if (act == 'c') {
-        
-            if (i != 3){
-            
-                std::cout << "Your Chip: ";
-                int bet = 0;
-                std::cin >> bet;
-                currentBet += bet;
-                players[0].PlaceBid(bet);
-                std::cout << "Left: ";
-                players[0].getChips();
-            }
+        for (auto& player : players) {
+            dealler.dealCards(2, player);
         }
-    }
-    std::vector<int> answer = dealler.SearchWinner(players, cards);
-        
-    if (answer.size() == 1) {
-        for (std::size_t i = 0; i < answer.size(); i++) {
-            if (answer[i] != 0) {
-                std::cout << "Win player: " << answer[i] << "\n";
-                
-                char act = 'p';
-                std::cout << "New Game? (y, n): ";
-                std::cin >> act;
-                if (act == 'n') {
-                
-                    std::cout << "End Game";
-                    return 0;
+
+        for (auto& player : players) {
+            player.getName();
+            player.getChipsOnDisplay();
+            if (!player.isBot()) {
+                player.getCardsOnDisplay();
+            }
+            std::cout << "\n";
+        }
+
+        std::vector<std::string> Numbers = { "First", "Second", "Third" };
+
+        for (int i = 1; i <= 3; i++) {
+            Card card = dealler.getOneCard();
+            cards.push_back(card);
+
+            std::cout << "\n" << Numbers[i - 1] << " card: ";
+            card.display();
+
+            for (auto& player : players) {
+                if (player.isBot()) {
+                    int new_currentBet = player.chipRandom(player.getChips(), currentBet);
+                    player.getName();
+                    if (new_currentBet == player.getChips()) {
+                        std::cout << "Allin!" << "\n";
+                        //Allin = true;
+                    }
+                    else {
+                        std::cout << "Make Bet: " << new_currentBet - currentBet << "\n";
+                        currentBet = new_currentBet;
+                        std::cout << "Current Bet: " << currentBet << "\n";
+                    }
                 }
                 else {
-                
-                    std::cout << "New Game";
-                    return 1;
+                    char act = 'p';
+                    std::cout << "Your answer (p - pass, c - call): ";
+                    std::cin >> act;
+
+                    if (act == 'p') {
+                        player.getName();
+                        std::cout << "Player passed.\n";
+                    }
+                    else if (act == 'c') {
+                        int bet = 0;
+                        std::cout << "Your bet: ";
+                        std::cin >> bet;
+
+                        currentBet += bet;
+                        player.PlaceBid(bet);
+                        player.getChipsOnDisplay();
+                    }
                 }
             }
         }
-    }
 
-    std::cout << "Draw between player: ";
-    for (std::size_t i = 0; i < answer.size(); i++) {
-        if (answer[i] != 0) {
-            std::cout << answer[i] << ", ";
+        std::vector<int> answer = dealler.SearchWinner(players, cards);
+
+        if (answer.size() == 1) {
+            std::cout << "Player " << answer[0] << " wins!\n";
         }
-    }
-    
-    std::cout << "\n";
-    
-    char act = 'p';
-    std::cout << "New Game? (y, n): ";
-    std::cin >> act;
-    if (act == 'n') {
-                
-        std::cout << "End Game";
-        return 0;
-    }
-    else {
-                
-        std::cout << "New Game";
-        return 1;
-    }  
+        else {
+            std::cout << "Draw between players: ";
+            for (const auto& winner : answer) {
+                std::cout << winner << " ";
+            }
+            std::cout << "\n";
+        }
+
+        resetGame();
+
+    } while (checkContinueGame());
+
+    std::cout << "Game over!\n";
+    return 0;
 }
+
+

@@ -26,9 +26,17 @@ public:
     ~Game();
 
     void setPlayer(std::string name);  // Creating players. 
-
+    
+    void setBot(std::string name, int index);
+    
     void setDealler();  // Creating a dealer.
-
+    
+    void resetGame();
+    
+    bool checkContinueGame();
+    
+    void setChipsAllPlayer(int count);
+    
     int startGame();  // Issuing chips
 };
 

@@ -38,7 +38,7 @@ public:
 
 // --------------------------
 class Deck {
-private:
+protected:
     std::vector<Card> cards; // All cards in deck ( 52 cards )
     
 public:
@@ -92,7 +92,9 @@ public:
 
     void setChips(int num);  // Set deb
 
-    void getChips() const;  //Get Chips
+    void getChipsOnDisplay() const;
+
+    int getChips() const;
 
     void PlaceBid(int num);  // Make a bed
 
@@ -105,6 +107,10 @@ public:
     int getCountCards() const;  // Get count card in head
 
     void delAllCards();  // Delete all cards after end play
+    
+    virtual bool isBot();
+
+    virtual int chipRandom(int countChips, int currentBet);
 };
 
 
@@ -127,6 +133,8 @@ public:
     void dealCards(int num, Player& player);  // Issuing 'num' cards to a player
 
     Card getOneCard();  // Drawing a card from the deck
+    
+    void newDeck();
 
     std::vector<int> SearchWinner(std::vector<Player>& players, std::vector<Card>& cards) const;  // Search for a winner
 };
