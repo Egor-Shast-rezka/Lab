@@ -26,10 +26,10 @@ jobs:
 
       - name: Build and run tests
         run: |
-          make clean
           make test_base
           make test_bot
           make test_game
+          make clean
 
   build:
     name: build all project
