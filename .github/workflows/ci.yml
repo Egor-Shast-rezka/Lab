@@ -46,4 +46,6 @@ jobs:
         run: sudo apt-get install g++ cmake libgtest-dev
 
       - name: Build project
-        run: make
+        run: |
+          cd Lab2
+          make
