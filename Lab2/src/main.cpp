@@ -12,12 +12,9 @@
 int main() {
     Game game;
     game.setPlayer("Egor");
-    game.setPlayer("Dima");
-    game.setPlayer("Vova");
-    game.setPlayer("Misha");
+    game.setBot("Dima", 1);
+    game.setChipsAllPlayer(1000);
     game.setDealler();
-    while(game.startGame() == 1) {
-    	std::cout << "\n";
-    }
+    game.startGame();
     return 0;
 }
