@@ -5,7 +5,6 @@
 
 #include <iostream>
 #include <vector>
-#include <algorithm> // Just for shuffle
 #include <random>
 #include <cstring>
 #include <cmath>
@@ -26,7 +25,9 @@ public:
 
     bool isBot() override;
 
-    int chipRandom(int countChips, int currentBet) override;
+    int chipRandom(int countChips);
+    
+    int BotActions(int countChips, int currentBet) override;
 };
 
 

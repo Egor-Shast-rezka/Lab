@@ -8,7 +8,6 @@
 #include <algorithm> // Just for shuffle
 #include <random>
 #include <cstring>
-#include <cmath>
 
 #ifndef BASEGAMERULE_H
 #define BASEGAMERULE_H
@@ -110,7 +109,7 @@ public:
     
     virtual bool isBot();
 
-    virtual int chipRandom(int countChips, int currentBet);
+    virtual int BotActions(int countChips, int currentBet);
 };
 
 

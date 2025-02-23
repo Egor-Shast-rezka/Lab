@@ -5,21 +5,19 @@
 
 #include <iostream>
 #include <vector>
-#include <algorithm> // Just for shuffle
-#include <random>
-#include <cstring>
-#include <cmath>
+#include <memory>
+
 
 #ifndef PATHGAME_H
 #define PATHGAME_H
 
 class Game {
 private:
-    std::vector<Player> players; // List of players
+    std::vector<std::unique_ptr<Player>> players; // List of players
     std::vector<Card> cards; // List of cards on the table
     Dealler dealler; // Dealer at the table
     int currentBet; // Current rate
-
+    
 public:
 
     Game();
