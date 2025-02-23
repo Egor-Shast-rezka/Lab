@@ -18,20 +18,11 @@ bool AIPlayer_easy::isBot() {
     return true;
 }
     
-int AIPlayer_easy::chipRandom(int countChips, int currentBet) {
+int AIPlayer_easy::chipRandom(int count) {
 
     std::vector<float> weights;
     float summ = 0;
     int answer = 0;
-    int count = 0;
-
-    if (countChips > currentBet) {
-        count = countChips - currentBet;
-    }
-    else {
-        return countChips;
-    }
-
 
     for (int i = 1; i <= count; i++) {
         summ += i;
@@ -56,6 +47,10 @@ int AIPlayer_easy::chipRandom(int countChips, int currentBet) {
         answer++;
     }
     return 0;
+}
+
+int AIPlayer_easy::BotActions(int countChips, int currentBet) {
+    return chipRandom(countChips);
 }
 
 

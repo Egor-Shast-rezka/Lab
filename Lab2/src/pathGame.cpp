@@ -13,9 +13,9 @@
 Game::Game() {}
 Game::~Game() {}
 
-void Game::setPlayer(std::string name) { // Creating players. 
-    Player player(name);
-    players.push_back(player);
+// Creating players
+void Game::setPlayer(std::string name) {
+    players.push_back(std::make_unique<Player>(name));
 }
 
 void Game::setDealler() { // Creating a dealer.
@@ -23,18 +23,16 @@ void Game::setDealler() { // Creating a dealer.
     dealler = diller;
 }
 
+// Function for adding bots
 void Game::setBot(std::string name, int index) {
     if (index == 1) {
-        AIPlayer_easy bot(name);
-        players.push_back(bot);
+        players.push_back(std::make_unique<AIPlayer_easy>(name));
     }
     else if (index == 2) {
-        AIPlayer_normal bot(name);
-        players.push_back(bot);
+        players.push_back(std::make_unique<AIPlayer_normal>(name));
     }
     else if (index == 3) {
-        AIPlayer_hard bot(name);
-        players.push_back(bot);
+        players.push_back(std::make_unique<AIPlayer_hard>(name));
     }
 }
 
@@ -44,7 +42,7 @@ void Game::resetGame() {
     dealler.shuffleDeck();
     currentBet = 0;
     for (auto& player : players) {
-        player.delAllCards();
+        player->delAllCards();
     }
     std::cout << "\n";
 }
@@ -58,24 +56,25 @@ bool Game::checkContinueGame() {
 
 void Game::setChipsAllPlayer(int count) {
     for (auto& player : players) {
-        player.setChips(count);
+        player->setChips(count);
     }
 }
 
+// Main function to start the game
 int Game::startGame() {
     do {
         //bool Allin = false;
-        dealler.shuffleDeck();
+        dealler.shuffleDeck(); // The dealer shuffles the deck
 
         for (auto& player : players) {
-            dealler.dealCards(2, player);
+            dealler.dealCards(2, *player); // We distribute cards to the players
         }
 
         for (auto& player : players) {
-            player.getName();
-            player.getChipsOnDisplay();
-            if (!player.isBot()) {
-                player.getCardsOnDisplay();
+            player->getName();
+            player->getChipsOnDisplay();
+            if (!player->isBot()) {
+                player->getCardsOnDisplay();
             }
             std::cout << "\n";
         }
@@ -83,17 +82,18 @@ int Game::startGame() {
         std::vector<std::string> Numbers = { "First", "Second", "Third" };
 
         for (int i = 1; i <= 3; i++) {
-            Card card = dealler.getOneCard();
+            Card card = dealler.getOneCard(); // Get card
             cards.push_back(card);
 
             std::cout << "\n" << Numbers[i - 1] << " card: ";
             card.display();
 
+            // Player actions
             for (auto& player : players) {
-                if (player.isBot()) {
-                    int new_currentBet = player.chipRandom(player.getChips(), currentBet);
-                    player.getName();
-                    if (new_currentBet == player.getChips()) {
+                if (player->isBot()) {
+                    int new_currentBet = player->BotActions(player->getChips(), currentBet);
+                    player->getName();
+                    if (new_currentBet == player->getChips()) {
                         std::cout << "Allin!" << "\n";
                         //Allin = true;
                     }
@@ -109,7 +109,7 @@ int Game::startGame() {
                     std::cin >> act;
 
                     if (act == 'p') {
-                        player.getName();
+                        player->getName();
                         std::cout << "Player passed.\n";
                     }
                     else if (act == 'c') {
@@ -118,14 +118,19 @@ int Game::startGame() {
                         std::cin >> bet;
 
                         currentBet += bet;
-                        player.PlaceBid(bet);
-                        player.getChipsOnDisplay();
+                        player->PlaceBid(bet);
+                        player->getChipsOnDisplay();
                     }
                 }
             }
         }
 
-        std::vector<int> answer = dealler.SearchWinner(players, cards);
+        std::vector<Player> player_refs;
+        for (const auto& player : players) {
+            player_refs.push_back(*player);
+        }
+
+        std::vector<int> answer = dealler.SearchWinner(player_refs, cards);
 
         if (answer.size() == 1) {
             std::cout << "Player " << answer[0] << " wins!\n";

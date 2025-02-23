@@ -163,7 +163,7 @@ bool Player::isBot() {
     return false;
 }
 
-int Player::chipRandom(int countChips, int currentBet) {
+int Player::BotActions(int countChips, int currentBet) {
     return 0;
 }
 
