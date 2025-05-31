@@ -6,6 +6,7 @@
 #include "bmp_reader.h"
 #include "filter_gaus.h"
 #include <iostream>
+#include <chrono>
 
 int main(int argc, char* argv[]) {
 
@@ -37,7 +38,13 @@ int main(int argc, char* argv[]) {
     std::cout << "-> Second task completed: file flip contra clockwise." << "\n";
 
     // Use filter Gausa for BMP contra clockwise
+    auto start = std::chrono::high_resolution_clock::now();
     ApplyGaussianFilter(new_bmp_file_1.get(), 5, 3.0);
+    auto end = std::chrono::high_resolution_clock::now();
+    
+    std::chrono::duration<double> duration = end - start;
+    std::cout << "Filter time: " << duration.count() << " seconds\n";
+
     new_bmp_file_1->Save_BMP_File("BMP_contra_clockwise_filter.bmp"); // Save result filter Gausa
     new_bmp_file_1.reset(); // Delete new_bmp_file_1
     
@@ -47,7 +54,12 @@ int main(int argc, char* argv[]) {
     std::cout << "-> Third task completed: file flip clockwise." << "\n";
 
     // Use filter Gausa for BMP clockwise
+    auto start = std::chrono::high_resolution_clock::now();
     ApplyGaussianFilter(new_bmp_file_2.get(), 5, 3.0);
+    auto end = std::chrono::high_resolution_clock::now();
+    
+    std::chrono::duration<double> duration = end - start;
+    std::cout << "Filter time: " << duration.count() << " seconds\n";
     new_bmp_file_2->Save_BMP_File("BMP_clockwise_filter.bmp"); // Save result filter Gausa
     new_bmp_file_2.reset(); // Delete new_bmp_file_2
     
