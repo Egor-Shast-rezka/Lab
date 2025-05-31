@@ -19,7 +19,7 @@ void GenereteGausKernel(int size, double sigma, double** gaussianKernel){
     for (int height = 0; height < size; ++height) {
         for (int length = 0; length < size; ++length) {
             gaussianKernel[height][length] = (1 / (2 * PI * sigma * sigma)) *
-                (exp(-(height * height + length * length)) / 2 * sigma * sigma) ; 
+                (exp(-(height * height + length * length)) / (2 * sigma * sigma)) ; 
             
             sum += gaussianKernel[height][length]; // For stabilization Gaus karnel
         }
@@ -34,15 +34,14 @@ void GenereteGausKernel(int size, double sigma, double** gaussianKernel){
 }
 
 // Function to apply Gaussian filter to an image
-void ApplyGaussianFilterParallel(BMP_File* bmp_file, int size, double sigma, int thread_count = 4) {
+void ApplyGaussianFilter(BMP_File* bmp_file, int size, double sigma, int thread_count) {
     int width = bmp_file->dib_header.width;
     int height = bmp_file->dib_header.height;
 
     RGB* file_data = new RGB[width * height];
 
     double** gaussianKernel = new double*[size];
-    for (int i = 0; i < size; ++i)
-        gaussianKernel[i] = new double[size];
+    for (int i = 0; i < size; ++i) gaussianKernel[i] = new double[size];
     GenereteGausKernel(size, sigma, gaussianKernel);
 
     auto worker = [&](int y_start, int y_end) {

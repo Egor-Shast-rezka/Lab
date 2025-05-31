@@ -1,19 +1,37 @@
-name: Start build
+name: Start build and testing
 
 on:
   push:
     branches:
-      - master
+      - add_Multithreading
   pull_request:
     branches:
-      - master
+      - add_Multithreading
 
 jobs:
+  test:
+    name: Run C++ tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: sudo apt-get install g++ cmake libgtest-dev
+
+      - name: Build and run tests
+        run: |
+          make
+          make test
+          make clean
 
   build:
     name: build all project
     runs-on: ubuntu-latest
-
+    
+    needs: test
+    
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -24,4 +42,5 @@ jobs:
       - name: Build project
         run: |
           make
+          make run
           make clean
