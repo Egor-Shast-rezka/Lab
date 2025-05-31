@@ -3,11 +3,9 @@ name: Start build and testing
 on:
   push:
     branches:
-      - master
       - add_Multithreading
   pull_request:
     branches:
-      - master
       - add_Multithreading
 
 jobs:
