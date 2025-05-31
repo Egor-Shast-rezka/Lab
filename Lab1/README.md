@@ -4,7 +4,7 @@ Contact: st129457@student.spbu.ru,egor.shast0.0@gmail.com
 
 ## Overview
 
-...
+The project provides tools for working with BMP images: loading/saving, 90° rotations and Gaussian blur. Implemented in C++ with optimization through multithreading.
 
 ## Table of Contents
 - [Installation and Build](#installation-and-build)
