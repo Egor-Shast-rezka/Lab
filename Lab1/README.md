@@ -1,21 +1,47 @@
-# Lab1.
-## Егор Шастин Олегович, gruppa b81-mm
-## Contact: st129457@student.spbu.ru,	egor.shast0.0@gmail.com
+# Lab1 and add Multithreading.
+Егор Шастин Олегович, gruppa b81-mm
+Contact: st129457@student.spbu.ru,egor.shast0.0@gmail.com
 
-## This work is created at level A+
+## Overview
 
-## In this work I worked with files in BMP format, read, saved and changed them. I also made a Gaussian filter algorithm. All the main conditions are met: reading, saving, flipping ## and changing the file.
+...
 
-## The program reads an image called example.bmp
+## Table of Contents
+- [Installation and Build](#installation-and-build)
+- [Tests](#tests)
 
-# BUILD:
-# make
+## Installation and Build
 
-# RUN:
-# make run	to launch program
-# make clean     to clean program
+### Building the Project
 
+```sh
+make
+```
 
+### Running the Decoder
+To start the programm, run the compiled executable:
 
+```sh
+make
+./bin/read_BMP <path to BMP file>
+```
 
-# 1-7.11.2024
+or
+
+```sh
+make
+make run # Run program
+```
+
+## Tests
+
+#### Continuous Integration (CI)
+This project uses GitHub Actions for automated builds and testing. All tests are run in the CI pipeline on every commit.
+
+#### Running Tests Locally
+To run tests locally, you can use the following commands:
+
+```sh
+make run-test    # Runs tests for all programm
+```
+
