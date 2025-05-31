@@ -4,13 +4,9 @@ on:
   push:
     branches:
       - master
-    path:
-      - 'Lab2/**'
   pull_request:
     branches:
       - master
-    path:
-      - 'Lab2/**'
 
 jobs:
   test:
@@ -26,10 +22,7 @@ jobs:
 
       - name: Build and run tests
         run: |
-          cd Lab2
-          make test_base
-          make test_bot
-          make test_game
+          make test
           make clean
 
   build:
@@ -47,5 +40,5 @@ jobs:
 
       - name: Build project
         run: |
-          cd Lab2
           make
+          make clean
