@@ -4,7 +4,7 @@ Contact: st129457@student.spbu.ru,egor.shast0.0@gmail.com
 
 ## Overview
 
-The project provides tools for working with BMP images: loading/saving, 90° rotations and Gaussian blur. Implemented in C++ with optimization through multithreading.
+This project delivers a comprehensive set of C++ tools for efficient BMP image manipulation, encompassing core functionalities like loading, saving, 90-degree rotations (both clockwise and counter-clockwise), and applying a Gaussian blur filter. The implementation leverages multithreading to optimize performance for image processing tasks, making it suitable for handling larger images more efficiently.
 
 ## Table of Contents
 - [Installation and Build](#installation-and-build)
@@ -23,14 +23,14 @@ To start the programm, run the compiled executable:
 
 ```sh
 make
-./bin/read_BMP <path to BMP file>
+./bin/read_BMP <path to BMP file>    # To start the program with your bmp-file
 ```
 
 or
 
 ```sh
 make
-make run # Run program
+make run    # To start the program with 'example.bmp'
 ```
 
 ## Tests
@@ -43,6 +43,6 @@ To run tests locally, you can use the following commands:
 
 ```sh
 make
-make run-test    # Runs tests for all programm
+make test    # Runs tests for all programm
 ```
 
