@@ -42,6 +42,7 @@ This project uses GitHub Actions for automated builds and testing. All tests are
 To run tests locally, you can use the following commands:
 
 ```sh
-make test    # Runs tests for all programm
+make
+make run-test    # Runs tests for all programm
 ```
 
