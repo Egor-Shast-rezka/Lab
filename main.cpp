@@ -32,8 +32,6 @@ int main(int argc, char* argv[]) {
     std::cout << "BMP file size:" << bmp_file.bmp_header.file_size << " byte" << "\n";
     std::cout << "-> First task completed: file size printed." << "\n\n";
     
-    // FIRST PART
-    
     // Flip BMP contra clockwise
     auto new_bmp_file_1 = bmp_file.flip_BMP_90_contra_clockwise(thread_count);
     new_bmp_file_1->Save_BMP_File("BMP_contra_clockwise.bmp"); // Save new file 1
@@ -49,8 +47,6 @@ int main(int argc, char* argv[]) {
 
     new_bmp_file_1->Save_BMP_File("BMP_contra_clockwise_filter.bmp"); // Save result filter Gausa
     new_bmp_file_1.reset(); // Delete new_bmp_file_1
-    
-    // SECOND PART
     
     // Flip BMP clockwise
     auto new_bmp_file_2 = bmp_file.flip_BMP_90_clockwise(thread_count);
