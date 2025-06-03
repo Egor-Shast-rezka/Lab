@@ -46,4 +46,4 @@ test: $(TARGET)
 	valgrind --leak-check=full ./$(TARGET) example.bmp
 
 # Phony targets
-.PHONY: all clean run run-test
+.PHONY: all clean run test
